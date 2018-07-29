@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                {% if photos_likes %}
+                {% if photos_likes.count() %}
                     {% for photo, likes in photos_likes %}
                         <div class="col-sm-6 col-md-4">
                             <a class="gallery-image" href="{{ photo.get_url() }}">
@@ -22,7 +22,7 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p>No photo declined yet.</p>
+                    <p>No photos published yet.</p>
                 {% endif %}
             </div>
         </div>
