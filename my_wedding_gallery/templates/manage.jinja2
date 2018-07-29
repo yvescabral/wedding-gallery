@@ -1,0 +1,117 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Manage photos</div>
+                <div class="panel-body">
+                    <ul class="nav nav-tabs nav-justified">
+                      <li role="presentation" class="active">
+                          <a href="#waiting" aria-controls="profile" role="tab" data-toggle="tab">
+                              <span class="glyphicon glyphicon-time"></span> Waiting approval
+                          </a>
+                      </li>
+                      <li role="presentation">
+                          <a href="#approved" aria-controls="profile" role="tab" data-toggle="tab">
+                              <span class="glyphicon glyphicon-ok"></span> Approved
+                          </a>
+                      </li>
+                      <li role="presentation">
+                          <a href="#declined" aria-controls="profile" role="tab" data-toggle="tab">
+                              <span class="glyphicon glyphicon-remove"></span> Declined
+                          </a>
+                      </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="waiting">
+                            {% if waiting_photos %}
+                                {% for photo in waiting_photos %}
+                                    <div class="col-sm-6 col-md-4" id="photo-{{ photo.id }}">
+                                        <div class="btn-group btn-group-justified" role="group">
+                                          <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-default decision-button" data-photo="{{ photo.id }}" data-action="approve">
+                                                <span class="glyphicon glyphicon-ok"></span> Approve
+                                            </button>
+                                          </div>
+                                          <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-default decision-button" data-photo="{{ photo.id }}" data-action="decline">
+                                                <span class="glyphicon glyphicon-remove"></span> Decline
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <a class="gallery-image" href="{{ photo.get_url() }}">
+                                            <div style="background-image: url({{ photo.get_thumbnail_url() }})"></div>
+                                        </a>
+                                        <p>by {{ photo.user.name }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No photo awaiting approval.</p>
+                            {% endif %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="approved">
+                            {% if approved_photos %}
+                                {% for photo in approved_photos %}
+                                    <div class="col-sm-6 col-md-4">
+                                        <a class="gallery-image" href="{{ photo.get_url() }}">
+                                            <div style="background-image: url({{ photo.get_thumbnail_url() }})"></div>
+                                        </a>
+                                        <p>by {{ photo.user.name }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No photo approved yet.</p>
+                            {% endif %}
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="declined">
+                            {% if declined_photos %}
+                                {% for photo in declined_photos %}
+                                    <div class="col-sm-6 col-md-4">
+                                        <a class="gallery-image" href="{{ photo.get_url() }}">
+                                            <div style="background-image: url({{ photo.get_thumbnail_url() }})"></div>
+                                        </a>
+                                        <p>by {{ photo.user.name }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No photo declined yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(function() {
+            $('.nav-tabs li a').click(function (e) {
+              e.preventDefault();
+              $(this).tab('show');
+            });
+            $('.decision-button').click(function() {
+               let photo_id = $(this).data('photo');
+               let action = $(this).data('action');
+               let $tab = $('#' + action + 'd');
+               let $photo = $('#photo-' + photo_id);
+               if ($tab.find('div').length === 0)
+                   $tab.find('p').remove();
+               $.get('/' + action + '/' + photo_id).done(function() {
+                   $photo.hide('slow', function() {
+                       $photo.find('.btn-group').remove();
+                       $tab.append($photo[0]);
+                       $photo.show();
+                   });
+               }).fail(function() {
+                   alert('Error occurred');
+               });
+            });
+        });
+    </script>
+{% endblock %}

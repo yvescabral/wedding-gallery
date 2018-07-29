@@ -1,0 +1,81 @@
+###
+# app configuration
+# https://docs.pylonsproject.org/projects/pyramid/en/1.9-branch/narr/environment.html
+###
+
+[app:main]
+use = egg:my-wedding-gallery
+
+pyramid.reload_templates = true
+pyramid.debug_authorization = false
+pyramid.debug_notfound = false
+pyramid.debug_routematch = false
+pyramid.default_locale_name = en
+pyramid.includes =
+    pyramid_debugtoolbar
+
+sqlalchemy.url = sqlite:///%(here)s/my-wedding-gallery.sqlite
+
+# By default, the toolbar only appears for clients from IP addresses
+# '127.0.0.1' and '::1'.
+# debugtoolbar.hosts = 127.0.0.1 ::1
+
+boto3.cache_factory = threading.local
+boto3.sessions = mysession
+boto3.session.mysession.core.config_file = /path/to/config
+boto3.session.mysession.core.credentials_file = /path/to/credentials
+boto3.session.mysession.core.profile = default
+boto3.clients = filepot
+boto3.client.filepot.session = mysession
+boto3.client.filepot.service_name = s3
+
+# generate
+bcrypt.secret = xxxx
+
+###
+# wsgi server configuration
+###
+
+[server:main]
+use = egg:waitress#main
+listen = localhost:6543
+
+###
+# logging configuration
+# https://docs.pylonsproject.org/projects/pyramid/en/1.9-branch/narr/logging.html
+###
+
+[loggers]
+keys = root, my_wedding_gallery, sqlalchemy
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = INFO
+handlers = console
+
+[logger_my_wedding_gallery]
+level = DEBUG
+handlers =
+qualname = my_wedding_gallery
+
+[logger_sqlalchemy]
+level = INFO
+handlers =
+qualname = sqlalchemy.engine
+# "level = INFO" logs SQL queries.
+# "level = DEBUG" logs SQL queries and results.
+# "level = WARN" logs neither.  (Recommended for production systems.)
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(asctime)s %(levelname)-5.5s [%(name)s:%(lineno)s][%(threadName)s] %(message)s

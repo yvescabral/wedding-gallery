@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="xxx">
+
+    <title>My Wedding Gallery</title>
+
+    <!-- Styles -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,700" rel="stylesheet">
+    <link href="{{request.static_url('my_wedding_gallery:static/app.css')}}" rel="stylesheet">
+
+    <!-- Magnific Popup core CSS file -->
+    <link href="{{request.static_url('my_wedding_gallery:static/magnific-popup.css')}}" rel="stylesheet">
+
+    {% block styles %}
+    {% endblock %}
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+
+                    <!-- Collapsed Hamburger -->
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle Navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+
+                    <a class="navbar-brand" href="{{request.route_url('home')}}">
+                        My Wedding Gallery
+                    </a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="app-navbar-collapse">
+                    <!-- Left Side Of Navbar -->
+                    <ul class="nav navbar-nav">
+                        &nbsp;
+                    </ul>
+
+                    <!-- Right Side Of Navbar -->
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if request.user %}
+                            {% if 'admin' in request.user.groups %}
+                            <li>
+                                <a href="{{ request.route_url('manage') }}">
+                                    Manage
+                                    {% if context.waiting_photos_count %}
+                                        <span class="badge">{{ context.waiting_photos_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li><a href="{{request.route_url('my_photos')}}">My photos</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true">
+                                    {{ request.user.name }} <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ request.route_url('logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+
+                        <!-- Authentication Links -->
+                        <li><a href="{{request.route_url('login')}}">Login</a></li>
+                        <li><a href="{{request.route_url('register')}}">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block content %}
+            <p>No content</p>
+        {% endblock content %}
+        <footer class="page-footer font-small blue pt-4">
+            <div class="container-fluid text-center text-md-left">
+                <div class="row">
+                    <hr class="clearfix w-100 d-md-none pb-3">
+                    <div class="footer-copyright text-center py-3">
+                        Made with <span class="glyphicon glyphicon-heart"></span>
+                        by <a href="https://github.com/yvescabral">Yves Cabral</a>
+                    </div>
+                </div>
+            </div>
+         </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="//stackpath.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Magnific Popup core JS file -->
+    <script src="{{request.static_url('my_wedding_gallery:static/magnific-popup.js')}}"></script>
+    <script>
+        $(function(){
+            $('.gallery-image').magnificPopup({
+                type: 'image'
+            });
+        })
+    </script>
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

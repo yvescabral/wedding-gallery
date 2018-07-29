@@ -1,0 +1,3 @@
+[run]
+source = my_wedding_gallery
+omit = my_wedding_gallery/test*

@@ -1,0 +1,56 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% if photos_likes %}
+                    {% for photo, likes in photos_likes %}
+                        <div class="col-sm-6 col-md-4">
+                            <a class="gallery-image" href="{{ photo.get_url() }}">
+                                <div style="background-image: url({{ photo.get_thumbnail_url() }})"></div>
+                            </a>
+                            <p>
+                                by {{ photo.user.name }}
+                                <button class="btn btn-link btn-sm pull-right like-button{{ ' active' if request.user and photo.id in user_liked_photos }}" data-id="{{ photo.id }}">
+                                    <span class="glyphicon glyphicon-heart"></span> Like
+                                </button>
+                            </p>
+                            <p>
+                                <span id="likes-count-{{ photo.id }}" data-value="{{ likes or 0 }}">{{ likes or 0 }} like{{ 's' if likes != 1 }}</span>
+                            </p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No photo declined yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        $('.like-button').click(function() {
+            {% if request.user %}
+                let $this = $(this);
+                let id = $this.data('id');
+                let $likesCount = $('#likes-count-' + $this.data('id'));
+                $.get('/' + ($this.hasClass('active') ? 'unlike' : 'like') + '/' + id)
+                    .done(function() {
+                        let likes = $this.hasClass('active') ?
+                            $likesCount.data('value') * 1 - 1 : $likesCount.data('value') * 1 + 1;
+                        $likesCount.data('value', likes);
+                        $likesCount.text(likes === 1 ? likes + ' like' : likes + ' likes');
+                        $this.toggleClass('active');
+                       })
+                    .fail(function() {
+                       alert('Error occurred');
+                   });
+            {% else %}
+                window.location = '{{ request.route_url('login') }}';
+            {% endif %}
+        });
+
+    </script>
+{% endblock scripts %}

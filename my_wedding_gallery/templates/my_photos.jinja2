@@ -1,0 +1,61 @@
+{% extends "layout.jinja2" %}
+{% block styles %}
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="{{request.static_url('my_wedding_gallery:static/magnific-popup.css')}}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">Upload</div>
+                <div class="panel-body">
+                    <form class="form-horizontal" method="POST" action="{{request.route_url('my_photos')}}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="email" class="col-md-4 control-label">Files</label>
+                            <div class="col-md-6">
+                                <input type="file" class="form-control" name="files" accept="image/*" required multiple>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-8 col-md-offset-4">
+                                <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">My photos</div>
+                <div class="panel-body">
+                    {% if request.user.photos %}
+                        {% for photo in request.user.photos %}
+                            <div class="col-sm-6 col-md-4">
+                                <a class="gallery-image" href="{{ photo.get_url() }}">
+                                    <div style="background-image: url({{ photo.get_thumbnail_url() }})"></div>
+                                </a>
+                                <p>
+                                    {% if photo.approved == None %}
+                                    <span class="glyphicon glyphicon-time"></span> Waiting approval
+                                    {% elif photo.approved %}
+                                    <span class="glyphicon glyphicon-ok"></span> Approved
+                                    {% else %}
+                                    <span class="glyphicon glyphicon-remove"></span> Declined
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>You have not uploaded any photos yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
