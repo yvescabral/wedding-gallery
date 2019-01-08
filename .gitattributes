@@ -1,1 +1,2 @@
-my_wedding_gallery/templates/*  linguist-vendored
+my_wedding_gallery/templates/* linguist-vendored
+my_wedding_gallery/static/* linguist-vendored
